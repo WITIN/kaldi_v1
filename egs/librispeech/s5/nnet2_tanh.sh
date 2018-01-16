@@ -274,38 +274,40 @@ EOF
   parallel_opts="--gpu 1"
   num_threads=1
   minibatch_size=512
-  dir=exp/tri5a_nnet2_tanh
+  dir=exp/tri5b_nnet2_tanh
 else
   # with just 4 jobs this might be a little slow.
   num_threads=16
   parallel_opts="--num-threads $num_threads"
   minibatch_size=128
-  dir=exp/tri5a_nnet2_tanh
+  dir=exp/tri5b_nnet2_tanh
 fi
 . utils/parse_options.sh
 
 train_stage=-10
 dnn_mem_reqs="--mem 8G"
-dnn_train_extra_opts="--num-epochs 20 --num-epochs-extra 5 --add-layers-period 1 --shrink-interval 3"
-#wsd6# if [ ! -f $dir/final.mdl ]; then
-#wsd6# #      --parallel-opts "$parallel_opts" \
-#wsd6# #      "${dnn_train_extra_opts[@]}" \ 
-#wsd6#   steps/nnet2/train_tanh.sh \
-#wsd6#       --stage $train_stage \
-#wsd6#       --num-threads "$num_threads" \
-#wsd6#       --minibatch-size "$minibatch_size" \
-#wsd6#       --initial-learning-rate 0.01 \
-#wsd6#       --num-jobs-nnet 4 \
-#wsd6#       --final-learning-rate 0.001 \
-#wsd6#       --num-hidden-layers 4  \
-#wsd6#       --hidden-layer-dim 1024 \
-#wsd6#       --splice-width 6 \
-#wsd6#       --samples-per-iter 400000 \
-#wsd6#       --cmd "$train_cmd" \
-#wsd6#       --feat-type raw \
-#wsd6#       --num-epochs 20 --num-epochs-extra 5 --add-layers-period 1 --shrink-interval 3 \
-#wsd6#   data-fbank/train_clean_100 data/lang exp/tri4b_ali_clean_100 $dir || exit 1
-#wsd6# fi
+#dnn_train_extra_opts="--num-epochs 20 --num-epochs-extra 5 --add-layers-period 1 --shrink-interval 3"
+if [ ! -f $dir/final.mdl ]; then
+#      --parallel-opts "$parallel_opts" \
+#      "${dnn_train_extra_opts[@]}" \ 
+#      --splice-width 6 \
+  steps/nnet2/train_tanh.sh \
+      --stage $train_stage \
+      --num-threads "$num_threads" \
+      --minibatch-size "$minibatch_size" \
+      --initial-learning-rate 0.01 \
+      --num-jobs-nnet 4 \
+      --final-learning-rate 0.001 \
+      --num-hidden-layers 4  \
+      --hidden-layer-dim 1024 \
+      --left-context 15 \
+      --right-context 5 \
+      --samples-per-iter 400000 \
+      --cmd "$train_cmd" \
+      --feat-type raw \
+      --num-epochs 20 --num-epochs-extra 5 --add-layers-period 1 --shrink-interval 3 \
+  data-fbank/train_clean_100 data/lang exp/tri4b_ali_clean_100 $dir || exit 1
+fi
   
 for test in test_clean test_other dev_clean dev_other; do
 #wsd#    --transform-dir exp/tri4b/decode_tgsmall_$test \
