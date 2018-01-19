@@ -17,8 +17,8 @@
 # Apache 2.0
 #
 
-. cmd.sh
-. path.sh
+. ./cmd.sh
+. ./path.sh
 
 
 set -e -o pipefail -u
@@ -185,7 +185,7 @@ fi
 if [ $stage -le 17 ]; then
   # This will only work if you have GPUs on your system (and note that it requires
   # you to have the queue set up the right way... see kaldi-asr.org/doc/queue.html)
-  local/chain/run_tdnn.sh --train-set train --gmm tri3 --nnet3-affix ""
+  local/chain/run_tdnn.sh
 fi
 
 # The nnet3 TDNN recipe:

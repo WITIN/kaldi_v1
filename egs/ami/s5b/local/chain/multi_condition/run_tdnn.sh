@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # This is a chain-training script with TDNN neural networks.
-# This script is based on local/chain/run_tdnn.sh, but adding
+# This script is based on local/chain/tuning/run_tdnn_1a.sh, but adding
 # the reverberated IHM data into the train set.
-# This script obtains better results on both IHM and SDM tasks.
+# This script obtains better results on IHM, SDM and MDM tasks.
 
 # Please see RESULTS_* for examples of command lines invoking this script.
 
@@ -20,7 +20,7 @@ stage=1
 mic=ihm
 nj=30
 min_seg_len=1.55
-use_ihm_ali=true
+use_ihm_ali=false
 train_set=train_cleaned
 gmm=tri3_cleaned  # the gmm for the target data
 ihm_gmm=tri3_cleaned  # the gmm for the IHM system (if --use-ihm-ali true).
@@ -37,7 +37,7 @@ common_egs_dir=  # you can set this to use previously dumped egs.
 # End configuration section.
 echo "$0 $@"  # Print the command line for logging
 
-. cmd.sh
+. ./cmd.sh
 . ./path.sh
 . ./utils/parse_options.sh
 
