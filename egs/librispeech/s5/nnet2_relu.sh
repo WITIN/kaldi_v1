@@ -291,7 +291,7 @@ if [ ! -f $dir/final.mdl ]; then
 #      --parallel-opts "$parallel_opts" \
 #      "${dnn_train_extra_opts[@]}" \ 
 #      --splice-width 6 \
-  steps/nnet2/train_relu.sh \
+  ./train_relu.sh \
       --stage $train_stage \
       --num-threads "$num_threads" \
       --minibatch-size "$minibatch_size" \
