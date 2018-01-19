@@ -243,66 +243,66 @@ set -e
 #wsd1# # subset
 #wsd1# local/nnet2/run_5a_clean_100.sh
 
-local/download_and_untar.sh $data $data_url train-clean-360
-
-# now add the "clean-360" subset to the mix ...
-local/data_prep.sh \
-  $data/LibriSpeech/train-clean-360 data/train_clean_360
-steps/make_mfcc.sh --cmd "$train_cmd" --nj 40 data/train_clean_360 \
-  exp/make_mfcc/train_clean_360 $mfccdir
-steps/compute_cmvn_stats.sh \
-  data/train_clean_360 exp/make_mfcc/train_clean_360 $mfccdir
-
-# ... and then combine the two sets into a 460 hour one
-utils/combine_data.sh \
-  data/train_clean_460 data/train_clean_100 data/train_clean_360
-
-# align the new, combined set, using the tri4b model
-steps/align_fmllr.sh --nj 40 --cmd "$train_cmd" \
-  data/train_clean_460 data/lang exp/tri4b exp/tri4b_ali_clean_460
-
-# create a larger SAT model, trained on the 460 hours of data.
-steps/train_sat.sh  --cmd "$train_cmd" 5000 100000 \
-  data/train_clean_460 data/lang exp/tri4b_ali_clean_460 exp/tri5b
-
-# decode using the tri5b model
-(
-  utils/mkgraph.sh data/lang_test_tgsmall \
-    exp/tri5b exp/tri5b/graph_tgsmall
-  for test in test_clean test_other dev_clean dev_other; do
-    steps/decode_fmllr.sh --nj 20 --cmd "$decode_cmd" \
-      exp/tri5b/graph_tgsmall data/$test \
-      exp/tri5b/decode_tgsmall_$test
-    steps/lmrescore.sh --cmd "$decode_cmd" data/lang_test_{tgsmall,tgmed} \
-      data/$test exp/tri5b/decode_{tgsmall,tgmed}_$test
-    steps/lmrescore_const_arpa.sh \
-      --cmd "$decode_cmd" data/lang_test_{tgsmall,tglarge} \
-      data/$test exp/tri5b/decode_{tgsmall,tglarge}_$test
-    steps/lmrescore_const_arpa.sh \
-      --cmd "$decode_cmd" data/lang_test_{tgsmall,fglarge} \
-      data/$test exp/tri5b/decode_{tgsmall,fglarge}_$test
-  done
-)&
-
-# train a NN model on the 460 hour set
-local/nnet2/run_6a_clean_460.sh
-
-local/download_and_untar.sh $data $data_url train-other-500
-
-# prepare the 500 hour subset.
-local/data_prep.sh \
-  $data/LibriSpeech/train-other-500 data/train_other_500
-steps/make_mfcc.sh --cmd "$train_cmd" --nj 40 data/train_other_500 \
-  exp/make_mfcc/train_other_500 $mfccdir
-steps/compute_cmvn_stats.sh \
-  data/train_other_500 exp/make_mfcc/train_other_500 $mfccdir
-
-# combine all the data
-utils/combine_data.sh \
-  data/train_960 data/train_clean_460 data/train_other_500
-
-steps/align_fmllr.sh --nj 40 --cmd "$train_cmd" \
-  data/train_960 data/lang exp/tri5b exp/tri5b_ali_960
+#wsd2# local/download_and_untar.sh $data $data_url train-clean-360
+#wsd2# 
+#wsd2# # now add the "clean-360" subset to the mix ...
+#wsd2# local/data_prep.sh \
+#wsd2#   $data/LibriSpeech/train-clean-360 data/train_clean_360
+#wsd2# steps/make_mfcc.sh --cmd "$train_cmd" --nj 40 data/train_clean_360 \
+#wsd2#   exp/make_mfcc/train_clean_360 $mfccdir
+#wsd2# steps/compute_cmvn_stats.sh \
+#wsd2#   data/train_clean_360 exp/make_mfcc/train_clean_360 $mfccdir
+#wsd2# 
+#wsd2# # ... and then combine the two sets into a 460 hour one
+#wsd2# utils/combine_data.sh \
+#wsd2#   data/train_clean_460 data/train_clean_100 data/train_clean_360
+#wsd2# 
+#wsd2# # align the new, combined set, using the tri4b model
+#wsd2# steps/align_fmllr.sh --nj 40 --cmd "$train_cmd" \
+#wsd2#   data/train_clean_460 data/lang exp/tri4b exp/tri4b_ali_clean_460
+#wsd2# 
+#wsd2# # create a larger SAT model, trained on the 460 hours of data.
+#wsd2# steps/train_sat.sh  --cmd "$train_cmd" 5000 100000 \
+#wsd2#   data/train_clean_460 data/lang exp/tri4b_ali_clean_460 exp/tri5b
+#wsd2# 
+#wsd2# # decode using the tri5b model
+#wsd2# (
+#wsd2#   utils/mkgraph.sh data/lang_test_tgsmall \
+#wsd2#     exp/tri5b exp/tri5b/graph_tgsmall
+#wsd2#   for test in test_clean test_other dev_clean dev_other; do
+#wsd2#     steps/decode_fmllr.sh --nj 20 --cmd "$decode_cmd" \
+#wsd2#       exp/tri5b/graph_tgsmall data/$test \
+#wsd2#       exp/tri5b/decode_tgsmall_$test
+#wsd2#     steps/lmrescore.sh --cmd "$decode_cmd" data/lang_test_{tgsmall,tgmed} \
+#wsd2#       data/$test exp/tri5b/decode_{tgsmall,tgmed}_$test
+#wsd2#     steps/lmrescore_const_arpa.sh \
+#wsd2#       --cmd "$decode_cmd" data/lang_test_{tgsmall,tglarge} \
+#wsd2#       data/$test exp/tri5b/decode_{tgsmall,tglarge}_$test
+#wsd2#     steps/lmrescore_const_arpa.sh \
+#wsd2#       --cmd "$decode_cmd" data/lang_test_{tgsmall,fglarge} \
+#wsd2#       data/$test exp/tri5b/decode_{tgsmall,fglarge}_$test
+#wsd2#   done
+#wsd2# )&
+#wsd2# 
+#wsd2# # train a NN model on the 460 hour set
+#wsd2# local/nnet2/run_6a_clean_460.sh
+#wsd2# 
+#wsd2# local/download_and_untar.sh $data $data_url train-other-500
+#wsd2# 
+#wsd2# # prepare the 500 hour subset.
+#wsd2# local/data_prep.sh \
+#wsd2#   $data/LibriSpeech/train-other-500 data/train_other_500
+#wsd2# steps/make_mfcc.sh --cmd "$train_cmd" --nj 40 data/train_other_500 \
+#wsd2#   exp/make_mfcc/train_other_500 $mfccdir
+#wsd2# steps/compute_cmvn_stats.sh \
+#wsd2#   data/train_other_500 exp/make_mfcc/train_other_500 $mfccdir
+#wsd2# 
+#wsd2# # combine all the data
+#wsd2# utils/combine_data.sh \
+#wsd2#   data/train_960 data/train_clean_460 data/train_other_500
+#wsd2# 
+#wsd2# steps/align_fmllr.sh --nj 40 --cmd "$train_cmd" \
+#wsd2#   data/train_960 data/lang exp/tri5b exp/tri5b_ali_960
 
 # train a SAT model on the 960 hour mixed data.  Use the train_quick.sh script
 # as it is faster.
