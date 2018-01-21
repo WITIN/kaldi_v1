@@ -259,7 +259,7 @@ mfccdir=mfcc
 #wsd# steps/align_fmllr.sh --nj 30 --cmd "$train_cmd" \
 #wsd#  data/train_10k data/lang exp/tri4b exp/tri4b_ali_10k
 
-######## tanh stars below
+######## relu stars below
 # DNN hybrid system training parameters
 
 
@@ -274,13 +274,13 @@ EOF
   parallel_opts="--gpu 1"
   num_threads=1
   minibatch_size=512
-  dir=exp/tri5c_nnet2_tanh_5x1024
+  dir=exp/tri5d_nnet2_relu_5x1024
 else
   # with just 4 jobs this might be a little slow.
   num_threads=16
   parallel_opts="--num-threads $num_threads"
   minibatch_size=128
-  dir=exp/tri5c_nnet2_tanh
+  dir=exp/tri5d_nnet2_relu
 fi
 . utils/parse_options.sh
 
@@ -291,7 +291,7 @@ if [ ! -f $dir/final.mdl ]; then
 #      --parallel-opts "$parallel_opts" \
 #      "${dnn_train_extra_opts[@]}" \ 
 #      --splice-width 6 \
-  steps/nnet2/train_tanh.sh \
+  ./train_relu.sh \
       --stage $train_stage \
       --num-threads "$num_threads" \
       --minibatch-size "$minibatch_size" \
@@ -304,6 +304,10 @@ if [ ! -f $dir/final.mdl ]; then
       --right-context 5 \
       --samples-per-iter 400000 \
       --cmd "$train_cmd" \
+      --feat-type raw \
+      --num-epochs 20 --num-epochs-extra 5 --add-layers-period 1 --shrink-interval 3 \
+  data-fbank/train_clean_100 data/lang exp/tri4b_ali_clean_100 $dir || exit 1
+fi
   
 for test in test_clean test_other dev_clean dev_other; do
 #wsd#    --transform-dir exp/tri4b/decode_tgsmall_$test \
